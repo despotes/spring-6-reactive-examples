@@ -69,4 +69,19 @@ class PersonRepositoryImplTest {
             });
         });
     }
+
+    @Test
+    void testFilterOnName() {
+        repository.findAll()
+                .filter(p -> p.getFirstName().equals("Fiona"))
+                .map(Person::getFirstName)
+                .subscribe(System.out::println);
+    }
+
+    @Test
+    void testGetById() {
+        Mono<Person> fionaMono = repository.findAll().filter(p -> p.getFirstName().equals("Fiona"))
+                .next();
+        fionaMono.subscribe(person -> System.out.println(person.getFirstName()));
+    }
 }
