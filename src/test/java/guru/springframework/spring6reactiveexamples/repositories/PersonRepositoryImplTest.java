@@ -6,6 +6,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,5 +84,21 @@ class PersonRepositoryImplTest {
         Mono<Person> fionaMono = repository.findAll().filter(p -> p.getFirstName().equals("Fiona"))
                 .next();
         fionaMono.subscribe(person -> System.out.println(person.getFirstName()));
+    }
+
+    @Test
+    void testFindPersonByIdNotFound() {
+        Flux<Person> personFlux = repository.findAll();
+        final Integer id = 8;
+
+        Mono<Person> personMono = personFlux.filter(person -> person.getId().equals(id)).single()
+                .doOnError(error -> {
+                    System.out.println("Error occurred in Flux");
+                    System.out.println(error.toString());
+                });
+        personMono.subscribe(System.out::println, throwable -> {
+            System.out.println("Error occurred in Flux");
+            System.out.println(throwable.toString());
+        });
     }
 }
